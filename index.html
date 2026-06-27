@@ -1097,19 +1097,20 @@ function sL(){
 }
 function mk(c){
   if(ST[c]){
-    // verde → vacía
     delete ST[c]; delete ST[c+'_r']; delete PT[c];
     save(); savePending();
-    updG(); renderM(); if(cId) updT(); if(repO)renderRP();
   } else if(PT[c]){
-    // naranja → verde
     delete PT[c]; savePending();
     ST[c]=true; save();
-    updG(); renderM(); if(cId) updT(); if(repO)renderRP();
   } else {
-    // vacía → naranja
     PT[c]=true; savePending();
-    updG(); renderM(); if(cId) updT();
+  }
+  updG(); renderM(); if(cId) updT(); if(repO)renderRP();
+  // Refresh search grid if open
+  const si2=document.getElementById('si2');
+  if(si2&&si2.value.trim()){
+    const team=TEAMS.find(t=>t.code===si2.value.trim().toUpperCase());
+    if(team) doSearch(team.code);
   }
 }
 function unm(c){
@@ -1570,17 +1571,7 @@ function _refreshSearch(c){
   if(sb) doSearchBig(team.code);
 }
 function tapSearch(c){
-  if(ST[c]){
-    alert('⚠️ '+c+' ya la tenés pegada en el álbum!');
-    return;
-  }
-  if(PT[c]){
-    delete PT[c]; savePending();
-    ST[c]=true; save();
-  } else {
-    PT[c]=true; savePending();
-  }
-  updG(); renderM(); _refreshSearch(c);
+  mk(c);
 }
 function longSearch(c){
   if(!confirm('Desmarcar '+c+' completamente?')) return;
