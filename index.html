@@ -1096,17 +1096,20 @@ function sL(){
   _didLong=false;
 }
 function mk(c){
-  if(!ST[c]&&!PT[c]){
-    // empty -> orange (pending)
-    PT[c]=true; savePending(); updT(); updG();
-  } else if(PT[c]&&!ST[c]){
-    // orange -> green (have)
-    delete PT[c]; savePending();
-    ST[c]=true; save(); updT(); updG(); if(repO)renderRP();
-  } else if(ST[c]){
-    // green -> empty (unmark)
+  if(ST[c]){
+    // verde → vacía
     delete ST[c]; delete ST[c+'_r']; delete PT[c];
-    save(); savePending(); updT(); updG(); if(repO)renderRP();
+    save(); savePending();
+    updG(); renderM(); if(cId) updT(); if(repO)renderRP();
+  } else if(PT[c]){
+    // naranja → verde
+    delete PT[c]; savePending();
+    ST[c]=true; save();
+    updG(); renderM(); if(cId) updT(); if(repO)renderRP();
+  } else {
+    // vacía → naranja
+    PT[c]=true; savePending();
+    updG(); renderM(); if(cId) updT();
   }
 }
 function unm(c){
