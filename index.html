@@ -1077,25 +1077,19 @@ function aRep(c,d){
 }
 
 let pt=null;
-// Single tap = mark/cycle, Double tap = clear
-let _lastTap=null, _lastTapTime=0;
-function tapChip(c){
-  const now=Date.now();
-  if(_lastTap===c && now-_lastTapTime<350){
-    // Double tap — clear everything
-    _lastTap=null;
+function sD(c){
+  pt=setTimeout(()=>{
+    pt=null;
     delete ST[c];delete ST[c+'_r'];delete PT[c];
     save();savePending();updT();updG();renderM();
-    if(navigator.vibrate) navigator.vibrate(40);
-    return;
-  }
-  _lastTap=c; _lastTapTime=now;
-  mk(c);
+  },600);
 }
-// Keep sD/sU/sL as no-ops for compatibility
-function sD(c){}
-function sU(c){}
-function sL(){}
+function sU(c){
+  if(pt){clearTimeout(pt);pt=null;mk(c);}
+}
+function sL(){
+  if(pt){clearTimeout(pt);pt=null;}
+}
 function mk(c){
   if(PT[c]&&!ST[c]){
     // Was pending, now mark as have (green)
@@ -1128,7 +1122,7 @@ function updT(){
   g.innerHTML=vis.map(x=>{
     const r=ST[x.c+'_r']||0;
     const isPend=PT[x.c]&&!ST[x.c];
-    return`<div class="sk${ST[x.c]?' have':isPend?' pending':''}${x.f?' foil':''}" onclick="tapChip('${x.c}')">${r>0?`<div class="rdot">${r}</div>`:''}<span class="sc">${x.c}</span><span class="sn">${x.n}</span></div>`;
+    return`<div class="sk${ST[x.c]?' have':isPend?' pending':''}${x.f?' foil':''}" onpointerdown="sD('${x.c}')" onpointerup="sU('${x.c}')" onpointercancel="sL()" onpointerleave="sL()" oncontextmenu="return false">${r>0?`<div class="rdot">${r}</div>`:''}<span class="sc">${x.c}</span><span class="sn">${x.n}</span></div>`;
   }).join('');
 }
 
