@@ -1077,9 +1077,23 @@ function aRep(c,d){
 }
 
 let pt=null;
-function sD(c){pt=setTimeout(()=>{unm(c);pt=null;},650);}
-function sU(c){if(pt){clearTimeout(pt);pt=null;mk(c);}}
-function sL(){if(pt){clearTimeout(pt);pt=null;}}
+function sD(c){
+  _lp=false;
+  pt=setTimeout(()=>{
+    _lp=true;
+    // Long press — clear everything
+    delete ST[c];delete ST[c+'_r'];delete PT[c];
+    save();savePending();updT();updG();renderM();
+    pt=null;
+  },600);
+}
+function sU(c){
+  if(pt){clearTimeout(pt);pt=null;}
+  if(_lp){_lp=false;return;}
+  mk(c);
+}
+function sL(){if(pt){clearTimeout(pt);pt=null;_lp=false;}}
+let _lp=false;
 function mk(c){
   if(PT[c]&&!ST[c]){
     // Was pending, now mark as have (green)
