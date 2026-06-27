@@ -1076,19 +1076,24 @@ function aRep(c,d){
   save();renderRP();updG();updT();
 }
 
-let pt=null;
+let pt=null,_didLong=false;
 function sD(c){
+  _didLong=false;
   pt=setTimeout(()=>{
+    _didLong=true;
     pt=null;
     delete ST[c];delete ST[c+'_r'];delete PT[c];
     save();savePending();updT();updG();renderM();
   },600);
 }
 function sU(c){
-  if(pt){clearTimeout(pt);pt=null;mk(c);}
+  if(pt){clearTimeout(pt);pt=null;}
+  if(!_didLong) mk(c);
+  _didLong=false;
 }
 function sL(){
   if(pt){clearTimeout(pt);pt=null;}
+  _didLong=false;
 }
 function mk(c){
   if(PT[c]&&!ST[c]){
