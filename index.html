@@ -286,8 +286,17 @@ body.light .bm-score{color:#111}
   </div>
   <div class="sw"><span class="si">🔍</span>
     <input type="text" id="si2" placeholder="Buscar: MEX3, ARG17, FWC5, CC3..." oninput="doSearch(this.value.trim().toUpperCase())">
+    <button onclick="toggleBackupPanel()" style="background:none;border:none;cursor:pointer;font-size:18px;padding:4px 8px" title="Backup / Restaurar">💾</button>
   </div>
   <div class="sr" id="srbox"></div>
+  <div id="backup-panel" style="display:none;margin-bottom:12px">
+    <textarea id="backup-txt" placeholder="Pegá aquí el contenido de tu backup..." style="width:100%;height:120px;border-radius:10px;padding:10px;font-size:12px;border:1px solid #444;background:#1a1a1a;color:#fff;box-sizing:border-box;resize:none"></textarea>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button onclick="importBackup()" style="flex:1;background:#1D9E75;border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer">✅ Importar</button>
+      <button onclick="exportBackup()" style="flex:1;background:#1a5fa8;border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer">📋 Exportar</button>
+      <button onclick="document.getElementById('backup-panel').style.display='none'" style="flex:1;background:#444;border:none;border-radius:10px;padding:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer">✕ Cerrar</button>
+    </div>
+  </div>
   <div class="acts" style="margin-bottom:8px">
     <button class="abtn gr" onclick="openMiss()">📋 Faltantes</button>
     <button class="abtn rd" onclick="openReps()">🔁 Repetidas</button>
@@ -1851,6 +1860,39 @@ function renderBracket(){
   document.getElementById('bracket-body').innerHTML = html;
 }
 
+
+function toggleBackupPanel(){
+  const p=document.getElementById('backup-panel');
+  p.style.display=p.style.display==='none'?'block':'none';
+  if(p.style.display==='block'){
+    document.getElementById('backup-txt').value='';
+    document.getElementById('backup-txt').focus();
+  }
+}
+
+function exportBackup(){
+  const data=localStorage.getItem('pw26v3')||'{}';
+  document.getElementById('backup-txt').value=data;
+  document.getElementById('backup-txt').select();
+  document.execCommand('copy');
+  alert('✅ Backup copiado al portapapeles!\nPegalo en un archivo .txt para guardarlo.');
+}
+
+function importBackup(){
+  const txt=document.getElementById('backup-txt').value.trim();
+  if(!txt){alert('Pegá el contenido del backup primero.');return;}
+  try{
+    const parsed=JSON.parse(txt);
+    localStorage.setItem('pw26v3',txt);
+    ST=parsed;
+    updG();renderM();
+    document.getElementById('backup-panel').style.display='none';
+    document.getElementById('backup-txt').value='';
+    alert('✅ Backup importado! '+Object.keys(parsed).filter(k=>!k.endsWith('_r')&&parsed[k]===true).length+' figuritas cargadas.');
+  }catch(e){
+    alert('❌ Error: el texto no es un backup válido. Verificá que copiaste todo el contenido.');
+  }
+}
 applyTheme();
 renderM();
 updG();
